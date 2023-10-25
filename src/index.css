@@ -43,7 +43,7 @@ button {
 button:hover,
 button:active {
   background-color: var(--color-secondary);
-  transform: rotate(1deg);
+  transform: rotate(2deg);
 }
 .intro {
   width: 100%;
@@ -137,7 +137,8 @@ TO-DO
   transition: 0.2s;
 }
 .to-do-item:hover,
-.to-do-item:active {
+.to-do-item:active,
+.open {
   background-color: #f2f2f288;
 }
 .to-do-item__main {

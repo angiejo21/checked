@@ -37,11 +37,14 @@ export default function App() {
   function handleCreateTodo(todo) {
     setTodoList([...todoList, todo]);
   }
+  function handleDeleteTodo(todoId) {
+    setTodoList((todos) => todos.slice().filter((t) => t.id !== todoId));
+  }
 
   return (
     <div className="App">
       <Header onNewTodo={handleCreateTodo} />
-      <ToDoList todoList={todoList} />
+      <ToDoList todoList={todoList} onDeleteTodo={handleDeleteTodo} />
       <Footer />
     </div>
   );
@@ -81,13 +84,18 @@ function FormNewToDo({ onNewTodo }) {
   );
 }
 
-function ToDoList({ todoList }) {
+function ToDoList({ todoList, onDeleteTodo }) {
   const [curOpen, setCurOpen] = useState(null);
   return (
     <div className="to-do-list">
       {todoList ? (
         todoList.map((todo) => (
-          <ToDoItem todo={todo} curOpen={curOpen} onOpen={setCurOpen} />
+          <ToDoItem
+            todo={todo}
+            curOpen={curOpen}
+            onOpen={setCurOpen}
+            onDeleteTodo={onDeleteTodo}
+          />
         ))
       ) : (
         <figure className="intro">
@@ -98,7 +106,7 @@ function ToDoList({ todoList }) {
   );
 }
 
-function ToDoItem({ todo, curOpen, onOpen }) {
+function ToDoItem({ todo, curOpen, onOpen, onDeleteTodo }) {
   const isOpen = todo.id === curOpen;
 
   function handleToggle() {
@@ -116,7 +124,9 @@ function ToDoItem({ todo, curOpen, onOpen }) {
         <div className="icons">
           {todo.date && "📅"} {todo.address && "📌"} {todo.category && "🏷️"}
         </div>
-        <button className="delete">🗑️</button>
+        <button className="delete" onClick={() => onDeleteTodo(todo.id)}>
+          🗑️
+        </button>
       </div>
       {isOpen && <ToDoItemForm />}
     </div>
