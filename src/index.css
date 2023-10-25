@@ -26,21 +26,34 @@ h1 {
   text-align: center;
   color: var(--color-light);
 }
+input,
+button,
+select {
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #ffffff22;
+  color: var(--color-dark);
+}
 button {
   border: none;
   background-color: var(--color-primary);
   transition: 0.2s;
+  width: 5rem;
 }
 button:hover,
 button:active {
   background-color: var(--color-secondary);
   transform: rotate(1deg);
 }
-input,
-button,
-select {
-  font-family: inherit;
-  cursor: pointer;
+.intro {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+img {
+  height: 30vh;
+  margin-top: 18rem;
 }
 .App {
   width: 350px;
@@ -50,10 +63,11 @@ select {
 }
 .to-do-list {
   padding: 1rem;
-  height: 100vh;
+  padding-bottom: 22rem;
 }
 .header {
-  background-color: var(--color-dark);
+  background-color: #333333ee;
+  backdrop-filter: blur(3px);
   position: fixed;
   width: 100%;
   left: 0;
@@ -61,7 +75,8 @@ select {
   z-index: 5;
 }
 .footer {
-  background-color: var(--color-dark);
+  background-color: #333333ee;
+  backdrop-filter: blur(3px);
   padding-bottom: 1rem;
   display: flex;
   flex-direction: column;
@@ -78,7 +93,6 @@ select {
   margin: 1rem 0;
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 5px;
   background-color: var(--color-primary);
 }
 .footer select:hover,
@@ -104,13 +118,14 @@ FORM
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--color-light);
 }
 /*---------------------
 TO-DO
 ---------------------*/
 .to-do-item {
   background-color: #f2f2f266;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(3px);
   border: 1px solid #ffffff55;
   border-radius: 5px;
   margin: 1rem 0;
@@ -123,20 +138,30 @@ TO-DO
 .to-do-item__main {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 1fr 4fr min-content;
   grid-template-rows: repeat(2, min-content);
-  margin-bottom: 1rem;
+  align-items: center;
+  column-gap: 1rem;
 }
 .icons {
   grid-column: 2 / -1;
+  grid-row: 2 / -1;
+}
+.delete {
+  grid-column: 3 / -1;
+  grid-row: 1 / -1;
+  font-size: 2rem;
+  background-color: #f2f2f266;
+  height: 5rem;
 }
 
 .form--edit-to-do {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 4fr 1fr;
+  grid-template-columns: 5fr min-content;
   grid-template-rows: repeat(3, min-content);
   gap: 1rem;
+  margin-top: 1rem;
 }
 .form--edit-to-do button {
   grid-column: 2 / -1;

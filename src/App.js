@@ -1,52 +1,112 @@
+import { useState } from "react";
+import intro from "./intro.svg";
+
+const initialToDos = [
+  {
+    id: crypto.randomUUID(),
+    title: "Buy beer",
+    date: new Date().getTime(),
+    address: "via dell'orto, 10",
+    category: "leisure",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Rob bank",
+    date: new Date().getTime(),
+    address: "via dell'orto, 10",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Paint flower",
+    address: "via dell'orto, 10",
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Smash the patriarchy",
+    date: new Date().getTime(),
+  },
+  {
+    id: crypto.randomUUID(),
+    title: "Hold my beer",
+  },
+];
+
 export default function App() {
+  const [todoList, setTodoList] = useState([...initialToDos]);
+
+  function handleCreateTodo(todo) {
+    setTodoList([...todoList, todo]);
+  }
+
   return (
     <div className="App">
-      <Header />
-      <ToDoList />
+      <Header onNewTodo={handleCreateTodo} />
+      <ToDoList todoList={todoList} />
       <Footer />
     </div>
   );
 }
 
-function Header() {
+function Header({ onNewTodo }) {
   return (
     <header className="header">
       <h1>Checked</h1>
-      <FromNewToDo />
+      <FormNewToDo onNewTodo={onNewTodo} />
     </header>
   );
 }
 
-function FromNewToDo() {
+function FormNewToDo({ onNewTodo }) {
+  const [todo, setTodo] = useState("");
+
+  function handleNewTodo(e) {
+    e.preventDefault();
+    const newTodo = {
+      id: crypto.randomUUID(),
+      title: todo,
+    };
+    onNewTodo(newTodo);
+    setTodo("");
+  }
   return (
-    <form className="form--new-to-do">
-      <input type="text" placeholder="What do you need to do?" />
+    <form className="form--new-to-do" onSubmit={handleNewTodo}>
+      <input
+        type="text"
+        value={todo}
+        onChange={(e) => setTodo(e.target.value)}
+        placeholder="What do you need to do?"
+      />
       <button>➕</button>
     </form>
   );
 }
 
-function ToDoList() {
+function ToDoList({ todoList }) {
   return (
     <div className="to-do-list">
-      <ToDoItem />
-      <ToDoItem />
-      <ToDoItem />
-      <ToDoItem />
-      <ToDoItem />
+      {todoList ? (
+        todoList.map((todo) => <ToDoItem todo={todo} />)
+      ) : (
+        <figure className="intro">
+          <img src={intro} alt="Person planning" />
+        </figure>
+      )}
     </div>
   );
 }
 
-function ToDoItem() {
+function ToDoItem({ todo }) {
   return (
     <div className="to-do-item">
       <div className="to-do-item__main">
         <input type="checkbox" />
-        <h3 className="to-do-item__title">Thing to do</h3>
-        <div className="icons">📅 📌 🏷️</div>
+        <h3 className="to-do-item__title">{todo.title}</h3>
+        <div className="icons">
+          {todo.date && "📅"} {todo.address && "📌"} {todo.category && "🏷️"}
+        </div>
+        <button className="delete">🗑️</button>
       </div>
-      <ToDoItemForm />
+      {/* <ToDoItemForm /> */}
     </div>
   );
 }
@@ -84,6 +144,7 @@ function Footer() {
   return (
     <footer className="footer">
       <select>
+        <option>All</option>
         <option>Work</option>
         <option>Health</option>
         <option>Family</option>
