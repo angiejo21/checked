@@ -82,10 +82,13 @@ function FormNewToDo({ onNewTodo }) {
 }
 
 function ToDoList({ todoList }) {
+  const [curOpen, setCurOpen] = useState(null);
   return (
     <div className="to-do-list">
       {todoList ? (
-        todoList.map((todo) => <ToDoItem todo={todo} />)
+        todoList.map((todo) => (
+          <ToDoItem todo={todo} curOpen={curOpen} onOpen={setCurOpen} />
+        ))
       ) : (
         <figure className="intro">
           <img src={intro} alt="Person planning" />
@@ -95,9 +98,18 @@ function ToDoList({ todoList }) {
   );
 }
 
-function ToDoItem({ todo }) {
+function ToDoItem({ todo, curOpen, onOpen }) {
+  const isOpen = todo.id === curOpen;
+
+  function handleToggle() {
+    onOpen(isOpen ? null : todo.id);
+  }
+
   return (
-    <div className="to-do-item">
+    <div
+      className={`to-do-item ${isOpen ? "open" : ""}`}
+      onClick={handleToggle}
+    >
       <div className="to-do-item__main">
         <input type="checkbox" />
         <h3 className="to-do-item__title">{todo.title}</h3>
@@ -106,7 +118,7 @@ function ToDoItem({ todo }) {
         </div>
         <button className="delete">🗑️</button>
       </div>
-      {/* <ToDoItemForm /> */}
+      {isOpen && <ToDoItemForm />}
     </div>
   );
 }
