@@ -5,7 +5,10 @@ const initialToDos = [
   {
     id: crypto.randomUUID(),
     title: "Buy beer",
-    date: new Date().getTime(),
+    date: {
+      day: "2023-10-27",
+      time: "13:00",
+    },
     address: "via dell'orto, 10",
     category: "leisure",
     checked: false,
@@ -13,7 +16,10 @@ const initialToDos = [
   {
     id: crypto.randomUUID(),
     title: "Rob bank",
-    date: new Date().getTime(),
+    date: {
+      day: "2023-10-27",
+      time: "13:00",
+    },
     address: "via dell'orto, 10",
     checked: true,
   },
@@ -26,7 +32,10 @@ const initialToDos = [
   {
     id: crypto.randomUUID(),
     title: "Smash the patriarchy",
-    date: new Date().getTime(),
+    date: {
+      day: "2023-10-27",
+      time: "13:00",
+    },
     checked: false,
   },
   {
@@ -37,7 +46,7 @@ const initialToDos = [
 ];
 
 export default function App() {
-  const [todoList, setTodoList] = useState([...initialToDos]);
+  const [todoList, setTodoList] = useState([]);
 
   function handleCreateTodo(todo) {
     setTodoList([...todoList, todo]);
@@ -48,9 +57,6 @@ export default function App() {
   function handleEditTodo(todo) {
     setTodoList((todos) => todos.map((t) => (t.id === todo.id ? todo : t)));
   }
-  function handleCheckTodo(todo) {
-    setTodoList((todos) => todos.map((t) => (t.id === todo.id ? todo : t)));
-  }
 
   return (
     <div className="App">
@@ -59,7 +65,6 @@ export default function App() {
         todoList={todoList}
         onDeleteTodo={handleDeleteTodo}
         onEditTodo={handleEditTodo}
-        onCheck={handleCheckTodo}
       />
       <Footer />
     </div>
@@ -101,11 +106,11 @@ function FormNewToDo({ onNewTodo }) {
   );
 }
 
-function ToDoList({ todoList, onDeleteTodo, onEditTodo, onCheck }) {
+function ToDoList({ todoList, onDeleteTodo, onEditTodo }) {
   const [curOpen, setCurOpen] = useState(null);
   return (
     <div className="to-do-list">
-      {todoList ? (
+      {todoList[0] ? (
         todoList.map((todo) => (
           <ToDoItem
             todo={todo}
@@ -113,7 +118,7 @@ function ToDoList({ todoList, onDeleteTodo, onEditTodo, onCheck }) {
             onOpen={setCurOpen}
             onDeleteTodo={onDeleteTodo}
             onEditTodo={onEditTodo}
-            onCheck={onCheck}
+            key={todo.id}
           />
         ))
       ) : (
@@ -125,14 +130,7 @@ function ToDoList({ todoList, onDeleteTodo, onEditTodo, onCheck }) {
   );
 }
 
-function ToDoItem({
-  todo,
-  curOpen,
-  onOpen,
-  onDeleteTodo,
-  onEditTodo,
-  onCheck,
-}) {
+function ToDoItem({ todo, curOpen, onOpen, onDeleteTodo, onEditTodo }) {
   const isOpen = todo.id === curOpen;
   const [checked, setChecked] = useState(false);
 
@@ -140,13 +138,13 @@ function ToDoItem({
     if (e.target.dataset.exit) return;
     onOpen(isOpen ? null : todo.id);
   }
-  function handleEdit() {
+  function handleEdit(todo) {
     onEditTodo(todo);
   }
   function handleCheck() {
     setChecked(!checked);
     todo.checked = !todo.checked;
-    onCheck(todo);
+    onEditTodo(todo);
   }
 
   return (
@@ -163,22 +161,34 @@ function ToDoItem({
         />
         <h3 className="to-do-item__title">{todo.title}</h3>
         <div className="icons">
-          {todo.date && "📅"} {todo.address && "📌"} {todo.category && "🏷️"}
+          {(todo.date?.day || todo.date?.time) && "📅"} {todo.address && "📌"}{" "}
+          {todo.category && "🏷️"}
         </div>
         <button className="delete" onClick={() => onDeleteTodo(todo.id)}>
           🗑️
         </button>
       </div>
-      {isOpen && <ToDoItemForm />}
+      {isOpen && <ToDoItemForm todo={todo} onEdit={handleEdit} />}
     </div>
   );
 }
 
-function ToDoItemForm() {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [address, setAddress] = useState("");
-  const [category, setCategory] = useState("");
+function ToDoItemForm({ todo, onEdit }) {
+  const [day, setDay] = useState(todo.date?.day);
+  const [time, setTime] = useState(todo.date?.time);
+  const [address, setAddress] = useState(todo.address);
+  const [category, setCategory] = useState(todo.category);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const date = {
+      day,
+      time,
+    };
+    const editedTodo = { ...todo, date, address, category };
+    console.log(editedTodo);
+    onEdit(editedTodo);
+  }
 
   return (
     <form className="form--edit-to-do">
@@ -186,8 +196,8 @@ function ToDoItemForm() {
         <label>📅</label>
         <input
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={day}
+          onChange={(e) => setDay(e.target.value)}
           data-exit="true"
         />
         <input
@@ -214,16 +224,16 @@ function ToDoItemForm() {
           data-exit="true"
         >
           <option></option>
-          <option>Work</option>
-          <option>Health</option>
-          <option>Family</option>
-          <option>Sport</option>
-          <option>Finance</option>
-          <option>Travel</option>
-          <option>Leisure</option>
+          <option value="work">Work</option>
+          <option value="health">Health</option>
+          <option value="family">Family</option>
+          <option value="sport">Sport</option>
+          <option value="finance">Finance</option>
+          <option value="travel">Travel</option>
+          <option value="leisure">Leisure</option>
         </select>
       </div>
-      <button>✏️</button>
+      <button onClick={handleSubmit}>✏️</button>
     </form>
   );
 }
