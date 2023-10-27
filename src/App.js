@@ -1,52 +1,13 @@
 import { useState } from "react";
 import intro from "./intro.svg";
 
-const initialToDos = [
-  {
-    id: crypto.randomUUID(),
-    title: "Buy beer",
-    date: {
-      day: "2023-10-27",
-      time: "13:00",
-    },
-    address: "via dell'orto, 10",
-    category: "leisure",
-    checked: false,
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Rob bank",
-    date: {
-      day: "2023-10-27",
-      time: "13:00",
-    },
-    address: "via dell'orto, 10",
-    checked: true,
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Paint flower",
-    address: "via dell'orto, 10",
-    checked: false,
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Smash the patriarchy",
-    date: {
-      day: "2023-10-27",
-      time: "13:00",
-    },
-    checked: false,
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Hold my beer",
-    checked: false,
-  },
-];
-
 export default function App() {
   const [todoList, setTodoList] = useState([]);
+  const [filter, setFilter] = useState("all");
+  const list =
+    filter === "all"
+      ? todoList
+      : todoList.slice().filter((todo) => todo.category === filter);
 
   function handleCreateTodo(todo) {
     setTodoList([...todoList, todo]);
@@ -62,11 +23,12 @@ export default function App() {
     <div className="App">
       <Header onNewTodo={handleCreateTodo} />
       <ToDoList
-        todoList={todoList}
+        todoList={list}
+        filter={filter}
         onDeleteTodo={handleDeleteTodo}
         onEditTodo={handleEditTodo}
       />
-      <Footer />
+      <Footer filter={filter} onFilter={setFilter} todoList={todoList} />
     </div>
   );
 }
@@ -106,8 +68,9 @@ function FormNewToDo({ onNewTodo }) {
   );
 }
 
-function ToDoList({ todoList, onDeleteTodo, onEditTodo }) {
+function ToDoList({ todoList, onDeleteTodo, onEditTodo, filter }) {
   const [curOpen, setCurOpen] = useState(null);
+
   return (
     <div className="to-do-list">
       {todoList[0] ? (
@@ -124,6 +87,7 @@ function ToDoList({ todoList, onDeleteTodo, onEditTodo }) {
       ) : (
         <figure className="intro">
           <img src={intro} alt="Person planning" />
+          <p>- Add something to the list -</p>
         </figure>
       )}
     </div>
@@ -238,18 +202,38 @@ function ToDoItemForm({ todo, onEdit }) {
   );
 }
 
-function Footer() {
+function Footer({ filter, onFilter, todoList }) {
   return (
     <footer className="footer">
-      <select>
-        <option>All</option>
-        <option>Work</option>
-        <option>Health</option>
-        <option>Family</option>
-        <option>Sport</option>
-        <option>Finance</option>
-        <option>Travel</option>
-        <option>Leisure</option>
+      <select value={filter} onChange={(e) => onFilter(e.target.value)}>
+        <option value="all">All</option>
+        <option value="work">
+          Work ({todoList.slice().filter((t) => t.category === "work").length})
+        </option>
+        <option value="health">
+          Health (
+          {todoList.slice().filter((t) => t.category === "health").length})
+        </option>
+        <option value="family">
+          Family (
+          {todoList.slice().filter((t) => t.category === "family").length})
+        </option>
+        <option value="sport">
+          Sport ({todoList.slice().filter((t) => t.category === "sport").length}
+          )
+        </option>
+        <option value="finance">
+          Finance (
+          {todoList.slice().filter((t) => t.category === "finance").length})
+        </option>
+        <option value="travel">
+          Travel (
+          {todoList.slice().filter((t) => t.category === "travel").length})
+        </option>
+        <option value="leisure">
+          Leisure (
+          {todoList.slice().filter((t) => t.category === "leisure").length})
+        </option>
       </select>
       <p>© Angela Bellò 2023</p>
     </footer>
