@@ -8,26 +8,31 @@ const initialToDos = [
     date: new Date().getTime(),
     address: "via dell'orto, 10",
     category: "leisure",
+    checked: false,
   },
   {
     id: crypto.randomUUID(),
     title: "Rob bank",
     date: new Date().getTime(),
     address: "via dell'orto, 10",
+    checked: true,
   },
   {
     id: crypto.randomUUID(),
     title: "Paint flower",
     address: "via dell'orto, 10",
+    checked: false,
   },
   {
     id: crypto.randomUUID(),
     title: "Smash the patriarchy",
     date: new Date().getTime(),
+    checked: false,
   },
   {
     id: crypto.randomUUID(),
     title: "Hold my beer",
+    checked: false,
   },
 ];
 
@@ -40,11 +45,22 @@ export default function App() {
   function handleDeleteTodo(todoId) {
     setTodoList((todos) => todos.slice().filter((t) => t.id !== todoId));
   }
+  function handleEditTodo(todo) {
+    setTodoList((todos) => todos.map((t) => (t.id === todo.id ? todo : t)));
+  }
+  function handleCheckTodo(todo) {
+    setTodoList((todos) => todos.map((t) => (t.id === todo.id ? todo : t)));
+  }
 
   return (
     <div className="App">
       <Header onNewTodo={handleCreateTodo} />
-      <ToDoList todoList={todoList} onDeleteTodo={handleDeleteTodo} />
+      <ToDoList
+        todoList={todoList}
+        onDeleteTodo={handleDeleteTodo}
+        onEditTodo={handleEditTodo}
+        onCheck={handleCheckTodo}
+      />
       <Footer />
     </div>
   );
@@ -67,6 +83,7 @@ function FormNewToDo({ onNewTodo }) {
     const newTodo = {
       id: crypto.randomUUID(),
       title: todo,
+      checked: false,
     };
     onNewTodo(newTodo);
     setTodo("");
@@ -84,7 +101,7 @@ function FormNewToDo({ onNewTodo }) {
   );
 }
 
-function ToDoList({ todoList, onDeleteTodo }) {
+function ToDoList({ todoList, onDeleteTodo, onEditTodo, onCheck }) {
   const [curOpen, setCurOpen] = useState(null);
   return (
     <div className="to-do-list">
@@ -95,6 +112,8 @@ function ToDoList({ todoList, onDeleteTodo }) {
             curOpen={curOpen}
             onOpen={setCurOpen}
             onDeleteTodo={onDeleteTodo}
+            onEditTodo={onEditTodo}
+            onCheck={onCheck}
           />
         ))
       ) : (
@@ -106,11 +125,28 @@ function ToDoList({ todoList, onDeleteTodo }) {
   );
 }
 
-function ToDoItem({ todo, curOpen, onOpen, onDeleteTodo }) {
+function ToDoItem({
+  todo,
+  curOpen,
+  onOpen,
+  onDeleteTodo,
+  onEditTodo,
+  onCheck,
+}) {
   const isOpen = todo.id === curOpen;
+  const [checked, setChecked] = useState(false);
 
-  function handleToggle() {
+  function handleToggle(e) {
+    if (e.target.dataset.exit) return;
     onOpen(isOpen ? null : todo.id);
+  }
+  function handleEdit() {
+    onEditTodo(todo);
+  }
+  function handleCheck() {
+    setChecked(!checked);
+    todo.checked = !todo.checked;
+    onCheck(todo);
   }
 
   return (
@@ -119,7 +155,12 @@ function ToDoItem({ todo, curOpen, onOpen, onDeleteTodo }) {
       onClick={handleToggle}
     >
       <div className="to-do-item__main">
-        <input type="checkbox" />
+        <input
+          type="checkbox"
+          data-exit="true"
+          onChange={() => handleCheck()}
+          checked={checked}
+        />
         <h3 className="to-do-item__title">{todo.title}</h3>
         <div className="icons">
           {todo.date && "📅"} {todo.address && "📌"} {todo.category && "🏷️"}
@@ -134,20 +175,45 @@ function ToDoItem({ todo, curOpen, onOpen, onDeleteTodo }) {
 }
 
 function ToDoItemForm() {
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [address, setAddress] = useState("");
+  const [category, setCategory] = useState("");
+
   return (
     <form className="form--edit-to-do">
       <div className="date">
         <label>📅</label>
-        <input type="date" />
-        <input type="time" />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          data-exit="true"
+        />
+        <input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          data-exit="true"
+        />
       </div>
       <div className="place">
         <label>📌</label>
-        <input type="text" />
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          data-exit="true"
+        />
       </div>
       <div className="category">
         <label>🏷️</label>
-        <select>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          data-exit="true"
+        >
+          <option></option>
           <option>Work</option>
           <option>Health</option>
           <option>Family</option>

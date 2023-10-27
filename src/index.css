@@ -15,7 +15,7 @@
 html {
   font-family: "Nunito Sans", sans-serif;
   box-sizing: border-box;
-  font-size: 62.5%;
+  font-size: 50%;
   background-color: var(--color-dark);
   color: var(--color-light);
 }
@@ -55,7 +55,8 @@ img {
   margin-top: 18rem;
 }
 .App {
-  width: 350px;
+  width: 90vw;
+  max-width: 40rem;
   height: 100vh;
   margin: 0 auto;
   position: relative;
@@ -221,4 +222,10 @@ input[type="date"] {
 .category {
   display: grid;
   grid-template-columns: min-content 1fr;
+}
+
+@media screen and (min-width: 22em) {
+  html {
+    font-size: 62.5%;
+  }
 }
