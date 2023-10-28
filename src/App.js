@@ -2,12 +2,14 @@ import { useState } from "react";
 import intro from "./intro.svg";
 
 export default function App() {
-  const [todoList, setTodoList] = useState([]);
+  const storage = JSON.parse(localStorage.getItem("todos"));
+  const [todoList, setTodoList] = useState(storage ? storage : []);
   const [filter, setFilter] = useState("all");
   const list =
     filter === "all"
       ? todoList
       : todoList.slice().filter((todo) => todo.category === filter);
+  localStorage.setItem("todos", JSON.stringify(todoList));
 
   function handleCreateTodo(todo) {
     setTodoList([...todoList, todo]);
@@ -206,36 +208,47 @@ function Footer({ filter, onFilter, todoList }) {
   return (
     <footer className="footer">
       <select value={filter} onChange={(e) => onFilter(e.target.value)}>
-        <option value="all">All</option>
-        <option value="work">
-          Work ({todoList.slice().filter((t) => t.category === "work").length})
-        </option>
-        <option value="health">
-          Health (
-          {todoList.slice().filter((t) => t.category === "health").length})
+        <option value="all">
+          All<span> ( {todoList.length} )</span>
         </option>
         <option value="family">
-          Family (
-          {todoList.slice().filter((t) => t.category === "family").length})
-        </option>
-        <option value="sport">
-          Sport ({todoList.slice().filter((t) => t.category === "sport").length}
-          )
+          {`Family ( ${
+            todoList.slice().filter((t) => t.category === "family").length
+          } )`}
         </option>
         <option value="finance">
-          Finance (
-          {todoList.slice().filter((t) => t.category === "finance").length})
+          {`Finance ( ${
+            todoList.slice().filter((t) => t.category === "finance").length
+          } )`}
         </option>
-        <option value="travel">
-          Travel (
-          {todoList.slice().filter((t) => t.category === "travel").length})
+        <option value="health">
+          {`Health ( ${
+            todoList.slice().filter((t) => t.category === "health").length
+          } )`}
         </option>
         <option value="leisure">
-          Leisure (
-          {todoList.slice().filter((t) => t.category === "leisure").length})
+          {`Leisure ( ${
+            todoList.slice().filter((t) => t.category === "leisure").length
+          } )`}
+        </option>
+        <option value="sport">
+          {`Sport ( ${
+            todoList.slice().filter((t) => t.category === "sport").length
+          } )`}
+        </option>
+        <option value="travel">
+          {`Travel ( ${
+            todoList.slice().filter((t) => t.category === "travel").length
+          } )`}
+        </option>
+        <option value="work">
+          {`
+          Work ( ${
+            todoList.slice().filter((t) => t.category === "work").length
+          } )`}
         </option>
       </select>
-      <p>© Angela Bellò 2023</p>
+      <p>© Angela Bellò {new Date().getFullYear()}</p>
     </footer>
   );
 }
